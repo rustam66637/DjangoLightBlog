@@ -1,0 +1,10 @@
+{% extends 'blog/base.html'%}
+
+{% block title %}
+    {{ post }}
+{% endblock %}
+
+{% block content %}
+    <h1 class="mt-5">{{ post }}</h1>
+    <p>{{ post.text }}</p>
+{% endblock %}
