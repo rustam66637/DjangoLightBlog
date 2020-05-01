@@ -6,12 +6,14 @@ from django.shortcuts import reverse
 
 from django.utils.text import slugify
 
+
 def gen_slug(s):
     new_slug = slugify(s, allow_unicode=True)
-    return  new_slug + '-' + str(int(time()))
+    return new_slug + '-' + str(int(time()))
+
 
 class Post(models.Model):
-    '''Posts'''
+    """Posts"""
     # author = models.ForeignKey(
     #     User,
     #     verbose_name='Автор',
@@ -29,23 +31,30 @@ class Post(models.Model):
     )
 
     def get_absolute_url(self):
-        '''ссылка на конкретный объект типа post'''
+        """ссылка на конкретный объект типа post"""
         # регенерация ссылки на объект
         return reverse('post_detail_url', kwargs={'slug': self.slug})
 
+    def get_update_url(self):
+        return reverse('post_update_url', kwargs={'slug': self.slug})
+
+    def get_delete_url(self):
+        return reverse('post_delete_url', kwargs={'slug': self.slug})
+
     def save(self, *args, **kwargs):
-        '''если слаг не прописан - генерировать слаг'''
+        """если слаг не прописан - генерировать слаг"""
         if not self.id:
             self.slug = gen_slug(self.title)
         super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.title
 
     class Meta:
         ordering = ('-publish_date',)
         verbose_name = 'Статья'
         verbose_name_plural = 'Статьи'
 
-    def __str__(self):
-        return self.title
 
 class Tag(models.Model):
     title = models.CharField('Заголовок', max_length=50)
@@ -57,6 +66,11 @@ class Tag(models.Model):
     def get_absolute_url(self):
         return reverse('tag_detail_url', kwargs={'slug': self.slug})
 
+    def get_update_url(self):
+        return reverse('tag_update_url', kwargs={'slug': self.slug})
+
+    def get_delete_url(self):
+        return reverse('tag_delete_url', kwargs={'slug': self.slug})
 
     class Meta:
         verbose_name = 'Тег'
