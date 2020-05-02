@@ -73,5 +73,6 @@ class Tag(models.Model):
         return reverse('tag_delete_url', kwargs={'slug': self.slug})
 
     class Meta:
+        ordering = ('title',)
         verbose_name = 'Тег'
         verbose_name_plural = 'Теги'

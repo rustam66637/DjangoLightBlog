@@ -30,12 +30,9 @@
       <li class="nav-item active">
         <a class="nav-link" href="{% url 'tag_list_url' %}">Теги</a>
       </li>
-      <li class="nav-item">
-        <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
-      </li>
     </ul>
-    <form class="form-inline my-2 my-lg-0">
-      <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+    <form class="form-inline my-2 my-lg-0" action="{% url 'post_list_url' %}">
+      <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" name="search">
       <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
     </form>
   </div>
@@ -46,30 +43,70 @@
             {% block content %}
                 Content
             {% endblock %}
+            <br>
+
+        {% if is_paginated %}
+
+            <nav aria-label="...">
+                <ul class="pagination">
+                    <li class="page-item {% if not prev_url %} disabled {% endif %}">
+                        <a class="page-link" href="{{ prev_url }}" tabindex="-1" aria-disabled="true">Предыдущая</a>
+                    </li>
+                
+                    {% for n in posts.paginator.page_range %}
+                        
+                        {% if posts.number == n %}
+
+                            <li class="page-item active" aria-current="page">
+                                <a class="page-link" href="?page={{ n }}">{{ n }}<span class="sr-only">(current)</span></a>
+                            </li>
+
+                        {% elif n > posts.number|add:-3 and n < posts.number|add:3 %}
+                        
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ n }}">{{ n }}</a>
+                            </li>
+
+                        {% endif %}
+
+                    {% endfor %}
+
+                    <li class="page-item {% if not next_url %} disabled {% endif %}">
+                        <a class="page-link" href="{{ next_url }}">Следующая</a>
+                    </li>
+                </ul>
+            </nav>
+
+        {% endif %}
+
         </div>
     </div>
 </div>
 
-    <div class="admin-panel align-items-center">
-        <a href="/admin" class="btn btn-outline-info">Admin</a>
-        {% block admin-panel %}
-            <div class="btn-group">
-                <button type="button" class="btn btn-light dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
-                        aria-expanded="false">
-                    Создание
-                </button>
-                <div class="dropdown-menu">
-                    <a class="dropdown-item" href="{% url 'post_create_url' %}">Статья</a>
-                    <a class="dropdown-item" href="{% url 'tag_create_url' %}">Тег</a>
-                </div>
-            </div>
+    {% if request.user.is_authenticated and request.user.is_staff %}
 
-            {% if detail %}
-                <a href="{{ admin_object.get_update_url }}" class="btn btn-light">Редактирование</a>
-                <a href="{{ admin_object.get_delete_url }}" class="btn btn-danger">Удаление</a>
-            {% endif %}
-        {% endblock %}
-    </div>
+        <div class="admin-panel align-items-center">
+            <a href="/admin" class="btn btn-outline-info">Admin</a>
+            {% block admin-panel %}
+                <div class="btn-group">
+                    <button type="button" class="btn btn-light dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+                            aria-expanded="false">
+                        Создание
+                    </button>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="{% url 'post_create_url' %}">Статья</a>
+                        <a class="dropdown-item" href="{% url 'tag_create_url' %}">Тег</a>
+                    </div>
+                </div>
+
+                {% if detail %}
+                    <a href="{{ admin_object.get_update_url }}" class="btn btn-light">Редактирование</a>
+                    <a href="{{ admin_object.get_delete_url }}" class="btn btn-danger">Удаление</a>
+                {% endif %}
+            {% endblock %}
+        </div>
+
+    {% endif %}
 
 </body>
 </html>
