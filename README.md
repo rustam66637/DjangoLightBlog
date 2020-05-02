@@ -1,6 +1,6 @@
 # DjangoLightBlog
 
-## Блог на Django, с использованием Bootstrap.
+## Блог на Django, + Bootstrap.
 
 Функциональность:
   создание;
